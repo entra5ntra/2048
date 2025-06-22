@@ -1,22 +1,25 @@
-// 初始化变量
 let touchStartX = 0, touchStartY = 0;
 let board = [];
-let score = 0; // 分数
+let score = 0;
 const size = 4;
+
 const container = document.getElementById('grid-container');
 const scoreEl = document.getElementById('score');
 const restartBtn = document.getElementById('restart-btn');
-// 添加合成动画和音效
-
-// 创建音效对象
 const mergeSound = new Audio('merge.mp3');
-// 重置游戏
+
+// 防止手机下滑网页滚动
+document.addEventListener('touchmove', e => {
+  e.preventDefault();
+}, { passive: false });
+
+// 重启游戏按钮
 restartBtn.addEventListener('click', () => {
   score = 0;
   startGame();
 });
 
-// 触摸事件（手机端）
+// 手机端滑动监听
 container.addEventListener('touchstart', e => {
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
@@ -31,7 +34,7 @@ container.addEventListener('touchend', e => {
   }
 });
 
-// 键盘方向键事件（电脑端）
+// 电脑方向键控制
 document.addEventListener('keydown', e => {
   if (e.key.startsWith('Arrow')) {
     const dir = e.key.replace('Arrow', '').toLowerCase();
@@ -78,37 +81,8 @@ function startGame() {
   renderBoard();
 }
 
-startGame();
-
 function updateScore() {
   scoreEl.textContent = score;
-}
-
-function renderBoard() {
-  document.querySelectorAll('.tile').forEach(t => t.remove());
-
-  const gap = 10;
-  const tileSize = (container.clientWidth - gap * (size + 1)) / size;
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      const val = board[i][j];
-      if (val !== 0) {
-        const tile = document.createElement('div');
-        tile.className = 'tile';
-        tile.textContent = val;
-        tile.style.position = 'absolute';
-        tile.style.width = `${tileSize}px`;
-        tile.style.height = `${tileSize}px`;
-        tile.style.lineHeight = `${tileSize}px`;
-        tile.style.left = `${gap + j * (tileSize + gap)}px`;
-        tile.style.top = `${gap + i * (tileSize + gap)}px`;
-        tile.style.textAlign = 'center';
-        tile.style.background = getTileColor(val);
-        container.appendChild(tile);
-      }
-    }
-  }
 }
 
 function getTileColor(val) {
@@ -127,6 +101,7 @@ function slideAndMerge(line) {
     if (result[i] === result[i + 1]) {
       result[i] *= 2;
       score += result[i];
+      mergeSound.play(); // 播放音效
       result[i + 1] = 0;
     }
   }
@@ -143,9 +118,7 @@ function move(direction) {
     }
 
     if (direction === 'right' || direction === 'down') line.reverse();
-
     let newLine = slideAndMerge(line);
-
     if (direction === 'right' || direction === 'down') newLine.reverse();
 
     for (let j = 0; j < size; j++) {
@@ -161,29 +134,6 @@ function move(direction) {
     updateScore();
     if (isGameOver()) alert('Game Over!');
   }
-}
-
-function isGameOver() {
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      if (board[i][j] === 0) return false;
-      if (j < size - 1 && board[i][j] === board[i][j + 1]) return false;
-      if (i < size - 1 && board[i][j] === board[i + 1][j]) return false;
-    }
-  }
-  return true;
-}
-function slideAndMerge(line) {
-  let result = line.filter(n => n !== 0);
-  for (let i = 0; i < result.length - 1; i++) {
-    if (result[i] === result[i + 1]) {
-      result[i] *= 2;
-      score += result[i];
-      mergeSound.play(); // 合并时播放音效
-      result[i + 1] = 0;
-    }
-  }
-  return result.filter(n => n !== 0).concat(Array(size).fill(0)).slice(0, size);
 }
 
 function renderBoard() {
@@ -208,14 +158,24 @@ function renderBoard() {
         tile.style.textAlign = 'center';
         tile.style.background = getTileColor(val);
 
-        // 合并的时候新生 tile 添加动画 class
-        if (tile.textContent !== '' && tile.textContent != 2) {
-          tile.classList.add('merge');
-          setTimeout(() => tile.classList.remove('merge'), 300);
-        }
+        tile.classList.add('merge');
+        setTimeout(() => tile.classList.remove('merge'), 300);
 
         container.appendChild(tile);
       }
     }
   }
 }
+
+function isGameOver() {
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      if (board[i][j] === 0) return false;
+      if (j < size - 1 && board[i][j] === board[i][j + 1]) return false;
+      if (i < size - 1 && board[i][j] === board[i + 1][j]) return false;
+    }
+  }
+  return true;
+}
+
+startGame();  // 启动游戏
