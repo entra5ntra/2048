@@ -1,22 +1,113 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>2048 游戏</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>2048游戏</title>
+    <!-- 引入游戏样式 -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- 引入字体图标库（用于音量图标等） -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
 <body>
-  <h1>2048 游戏</h1>
-  <div id="game-container">
-    <div id="grid-container"></div>
-    <div id="score-container">分数: <span id="score">0</span></div>
-  </div>
-  <button id="restart-btn">重玩</button>
+    <!-- 游戏主容器 -->
+    <div class="container">
+        <!-- 页眉：游戏标题和分数显示区域 -->
+        <header>
+            <h1>2048</h1>
+            <div class="score-container">
+                <div class="score-box">
+                    <span class="score-title">分数</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span class="score-title">最高分</span>
+                    <span id="best-score">0</span>
+                </div>
+            </div>
+        </header>
 
-  <script src="main.js"></script>
+        <!-- 游戏介绍和控制按钮 -->
+        <div class="game-intro">
+            <p>将数字方块合并在一起，得到 <strong>2048</strong> 方块！</p>
+           <div class="game-controls">
+    <button id="new-game-button">新游戏</button>
+    <button id="undo-button">撤销</button>
+    <button id="save-button">保存进度</button>
+    <button id="load-button">恢复进度</button>
+    <button id="sound-toggle" class="icon-button" title="音效开关">
+        <i class="fas fa-volume-up"></i>
+    </button>
+</div>
+        </div>
+
+        <!-- 游戏容器：包含网格、方块、消息等 -->
+        <div class="game-container">
+            <!-- 网格背景：4x4 网格布局 -->
+            <div class="grid-container">
+                <!-- 每一行包含4个网格单元格 -->
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+            </div>
+
+            <!-- 方块容器：游戏中的数字方块将由 JavaScript 动态添加到这里 -->
+            <div class="tile-container"></div>
+
+            <!-- 游戏消息覆盖层：在游戏胜利或失败时显示 -->
+            <div class="game-message">
+                <p></p>
+                <div class="game-message-buttons">
+                    <button id="retry-button">再试一次</button>
+                    <button id="keep-playing-button">继续游戏</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏说明文字 -->
+        <p class="game-explanation">
+            <strong>游戏规则:</strong> 使用 <strong>方向键</strong> 或 <strong>WASD</strong> 键移动方块。在移动设备上，可以通过<strong>滑动</strong>屏幕控制方向。相同数字的方块相撞时会合并成更大的数字！
+        </p>
+
+        <!-- 移动端手势操作提示（仅在移动设备上显示） -->
+        <div class="gesture-hint" id="gesture-hint">
+            <div class="gesture-icon">
+                <i class="fas fa-hand-point-up"></i>
+                <div class="gesture-arrows">
+                    <i class="fas fa-arrow-up"></i>
+                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-arrow-down"></i>
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+            </div>
+            <p>在屏幕上滑动以移动方块</p>
+        </div>
+    </div>
+
+    <!-- 引入音效管理模块脚本（需在游戏脚本之前加载） -->
+    <script src="sounds.js"></script>
+    <!-- 引入游戏主逻辑脚本 -->
+    <script src="game.js"></script>
 </body>
 </html>
-#更新一下

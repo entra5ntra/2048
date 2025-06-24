@@ -1,95 +1,402 @@
+/* 全局基础样式重置与设置 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-  font-family: sans-serif;
-  text-align: center;
-  padding: 20px;
-}
-#game-container {
-  display: inline-block;
-  position: relative;
-}
-#grid-container {
-  width: 320px;
-  height: 320px;
-  background: #bbada0;
-  border-radius: 6px;
-  padding: 10px;
-  box-sizing: border-box;
-  display: grid;
-  grid-template: repeat(4, 1fr) / repeat(4, 1fr);
-  gap: 10px;
-}
-/* 默认布局（适用于桌面/宽屏） */
-#grid-container {
-  width: 320px;
-  height: 320px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #faf8ef;
+    color: #776e65;
+    font-size: 18px;
 }
 
-/* 触屏设备或小屏幕(最大宽度400px)下自适应布局 */
-@media (max-width: 400px) {
-  #grid-container {
-    width: 90vw;
-    height: 90vw;
-  }
-  .tile {
-    line-height: calc(90vw / 4);
-    font-size: calc(90vw / 10);
-  }
+/* 页面主容器：居中定宽 */
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.cell {
-  background: #cdc1b4;
-  border-radius: 3px;
+/* ===== 页眉样式 ===== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
+
+h1 {
+    font-size: 60px;
+    font-weight: bold;
+    color: #776e65;
+    margin: 0;
+}
+
+/* 分数容器 */
+.score-container {
+    display: flex;
+    gap: 10px;
+}
+
+.score-box {
+    background: #bbada0;
+    padding: 10px 15px;
+    border-radius: 3px;
+    min-width: 80px;
+    text-align: center;
+    color: #fff;
+}
+
+.score-title {
+    font-size: 14px;
+    display: block;
+}
+
+#score,
+#best-score {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+/* ===== 游戏介绍与控制区样式 ===== */
+.game-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* 控制按钮组 */
+.game-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* 所有按钮的基础样式 */
+button {
+    background: #8f7a66;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background 0.3s;
+}
+button:hover {
+    background: #9f8b77;
+}
+
+/* 图标按钮的特殊样式（圆形按钮，如音效开关） */
+.icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+.icon-button:hover {
+    background: #9f8b77;
+    transform: scale(1.05);
+}
+/* 静音状态时图标切换（使用 Font Awesome 图标代码） */
+.icon-button.muted i:before {
+    content: "\f6a9";  /* 切换为静音图标 (fa-volume-mute) */
+}
+
+/* ===== 游戏区域样式 ===== */
+.game-container {
+    position: relative;
+    background: #bbada0;
+    border-radius: 6px;
+    width: 100%;
+    /* 高度与宽度相同，使用内边距保持正方形比例 */
+    height: 0;
+    padding-bottom: 100%;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+/* 网格背景容器 */
+.grid-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    /* 在背景层排列网格单元格 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1;
+}
+.grid-row {
+    display: flex;
+    justify-content: space-between;
+    /* 每行高度为容器的1/4减去间隙的一部分 */
+    height: calc(25% - 11.25px);
+}
+.grid-cell {
+    /* 网格单元格：背景小方块 */
+    width: calc(25% - 11.25px);
+    height: 100%;
+    background: rgba(238, 228, 218, 0.35);
+    border-radius: 3px;
+}
+
+/* 动态方块容器：放置绝对定位的数字方块 */
+.tile-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    z-index: 2;
+}
+
+/* ===== 方块样式 ===== */
 .tile {
-  position: absolute;
-  border-radius: 3px;
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 80px;
+    position: absolute;
+    /* 方块宽高略小于网格单元格，以留出四周均等的间隙 */
+    width: calc((100% - 75px) / 4);  /* 75px = gap 15px × 5 */
+    height: calc((100% - 75px) / 4);
+    border-radius: 3px;
+    background: #eee4da;
+    color: #776e65;
+    font-size: 35px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 动画与层级 */
+    transition: 150ms ease-in-out;
+    /* 同时过渡位置（left/top）、缩放和透明度变化 */
+    transition-property: transform, opacity, left, top;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-#score-container {
-  margin-top: 10px;
+/* 不同数值的方块颜色设置 */
+.tile-2 {
+    background: #eee4da;
+    color: #776e65;
 }
-#restart-btn {
-  margin-top: 10px;
-  padding: 8px 16px;
+.tile-4 {
+    background: #ede0c8;
+    color: #776e65;
 }
-#grid-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 10px;
-  background: #bbada0;
-  padding: 10px;
-  border-radius: 6px;
-  width: 320px;
-  height: 320px;
-  position: relative;
+/* 所有>=8的方块数字使用白色字体 */
+.tile-8, .tile-16, .tile-32, .tile-64,
+.tile-128, .tile-256, .tile-512,
+.tile-1024, .tile-2048 {
+    color: #fff;
+}
+.tile-8 {
+    background: #f2b179;
+}
+.tile-16 {
+    background: #f59563;
+}
+.tile-32 {
+    background: #f67c5f;
+}
+.tile-64 {
+    background: #f65e3b;
+}
+.tile-128 {
+    background: #edcf72;
+    font-size: 30px;
+}
+.tile-256 {
+    background: #edcc61;
+    font-size: 30px;
+}
+.tile-512 {
+    background: #edc850;
+    font-size: 30px;
+}
+.tile-1024 {
+    background: #edc53f;
+    font-size: 25px;
+}
+.tile-2048 {
+    background: #edc22e;
+    font-size: 25px;
 }
 
-.cell {
-  background: #cdc1b4;
-  border-radius: 3px;
-  width: 100%;
-  height: 100%;
+/* ===== 方块动画效果 ===== */
+/* 新生成方块的出现动画 */
+.tile-new {
+    animation: appear 250ms ease-in-out;
 }
-
-.tile {
-  position: absolute;
-  background: #eee4da;
-  color: #776e65;
-  font-size: 28px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 70px;
-  border-radius: 3px;
+/* 合并后方块的弹出放大动画 */
+.tile-merged {
+    animation: pop 250ms ease-in-out;
+    z-index: 20;  /* 确保合并时弹出的方块位于顶层 */
 }
-.merge {
-  animation: pop 0.3s ease;
+/* 关键帧：新方块出现 */
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
+/* 关键帧：方块合并弹出 */
 @keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+    0% {
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+/* 如果一次移动中连续发生两次合并，可以使用不同动画（未使用，可扩展） */
+.tile-super-merged {
+    animation: super-pop 350ms ease-in-out;
+    z-index: 30;
+}
+@keyframes super-pop {
+    0% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(1.3);
+    }
+    60% {
+        transform: scale(0.8);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ===== 游戏结束/胜利消息样式 ===== */
+.game-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 半透明覆盖层 */
+    background: rgba(238, 228, 218, 0.73);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease-in-out;
+    z-index: 100;
+}
+/* 当游戏胜利或结束时，显示覆盖层 */
+.game-message.game-won,
+.game-message.game-over {
+    opacity: 1;
+    pointer-events: auto;
+}
+.game-message p {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.game-message-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* ===== 游戏说明文本 ===== */
+.game-explanation {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* ===== 移动端手势提示样式 ===== */
+.gesture-hint {
+    display: none; /* 默认隐藏，在需要时（移动设备）再显示 */
+    margin: 20px auto;
+    text-align: center;
+    padding: 15px;
+    background: rgba(238, 228, 218, 0.5);
+    border-radius: 6px;
+    max-width: 300px;
+}
+.gesture-icon {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 10px;
+}
+.gesture-icon .fa-hand-point-up {
+    font-size: 40px;
+    color: #776e65;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.gesture-arrows {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.gesture-arrows i {
+    position: absolute;
+    color: #8f7a66;
+    font-size: 14px;
+    animation: pulse 1.5s infinite;
+}
+.gesture-arrows .fa-arrow-up {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+.gesture-arrows .fa-arrow-right {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    animation-delay: 0.375s;
+}
+.gesture-arrows .fa-arrow-down {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0.75s;
+}
+.gesture-arrows .fa-arrow-left {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    animation-delay: 1.125s;
+}
+/* 手势箭头的闪烁动画 */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
 }
