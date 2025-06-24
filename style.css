@@ -164,8 +164,8 @@ button:hover {
 .tile {
     position: absolute;
     /* 方块宽高略小于网格单元格，以留出四周均等的间隙 */
-    width: calc((100% - 75px) / 4);  /* 75px = gap 15px × 5 */
-    height: calc((100% - 75px) / 4);
+    width: calc(25% - 26.25px);
+    height: calc(25% - 26.25px);
     border-radius: 3px;
     background: #eee4da;
     color: #776e65;
