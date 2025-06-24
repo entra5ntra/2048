@@ -163,9 +163,8 @@ button:hover {
 /* ===== 方块样式 ===== */
 .tile {
     position: absolute;
-    /* 方块宽高略小于网格单元格，以留出四周均等的间隙 */
-    width: calc(25% - 26.25px);
-    height: calc(25% - 26.25px);
+    width: calc(25% - 21.25px);
+    height: calc(25% - 21.25px);
     border-radius: 3px;
     background: #eee4da;
     color: #776e65;
@@ -174,9 +173,7 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* 动画与层级 */
     transition: 150ms ease-in-out;
-    /* 同时过渡位置（left/top）、缩放和透明度变化 */
     transition-property: transform, opacity, left, top;
     z-index: 10;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

@@ -99,7 +99,7 @@ class Game2048 {
     }
 
     // 将一个方块对象渲染到页面DOM中
-    // 参数 isNew 表示是否以“新生成”动画呈现
+    // 参数 isNew 表示是否以"新生成"动画呈现
     addTile(tile, isNew = false) {
         const tileElement = document.createElement('div');
         // 设置方块的基础样式类和表示数值的类
@@ -125,7 +125,7 @@ class Game2048 {
         const gap = 15;             // 网格间隙px（单元格之间以及单元格与容器边缘）
         // 计算单元格的像素大小
         const cellSize = (this.tileContainer.clientWidth - 2 * padding - (this.gridSize - 1) * gap) / this.gridSize;
-        // 方块相对于容器左上角的像素位置（包含内边距和间隙偏移）
+        // 直接返回格子左上角像素位置
         return {
             left: padding + y * (cellSize + gap),
             top:  padding + x * (cellSize + gap)
@@ -344,7 +344,7 @@ class Game2048 {
         // 如果赢了且玩家选择继续，则不显示提示（游戏继续进行）
     }
 
-    // 点击“继续游戏”按钮后调用，允许游戏在胜利后继续
+    // 点击"继续游戏"按钮后调用，允许游戏在胜利后继续
     keepPlaying() {
         this.keepPlayingAfterWin = true;
         this.messageContainer.classList.remove('game-won');
@@ -440,21 +440,13 @@ class Game2048 {
     // 绑定触摸事件（移动端）：根据滑动方向移动方块
     bindTouchEvents() {
         let touchStartX, touchStartY;
-        const gameContainer = document.querySelector('.game-container');
-
-        // 阻止整个游戏容器的默认触摸行为，防止滚动干扰
-        gameContainer.addEventListener('touchmove', event => {
-            event.preventDefault();
-        }, { passive: false });
-
-        // 触摸开始时记录起始位置
+        // 将触摸事件监听器绑定到document而不是游戏容器
         document.addEventListener('touchstart', event => {
             if (!event.touches.length) return;
             touchStartX = event.touches[0].clientX;
             touchStartY = event.touches[0].clientY;
         }, { passive: true });
 
-        // 触摸结束时计算方向并移动
         document.addEventListener('touchend', event => {
             if (touchStartX === undefined || touchStartY === undefined) return;
             const touchEndX = event.changedTouches[0].clientX;
@@ -478,6 +470,13 @@ class Game2048 {
             touchStartX = undefined;
             touchStartY = undefined;
         }, { passive: true });
+
+        // 阻止文档的默认触摸行为，防止滚动干扰游戏
+        document.addEventListener('touchmove', event => {
+            if (event.touches.length) {
+                event.preventDefault();
+            }
+        }, { passive: false });
     }
 }
 
