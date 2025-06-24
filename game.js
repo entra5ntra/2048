@@ -127,8 +127,8 @@ class Game2048 {
         const cellSize = (this.tileContainer.clientWidth - 2 * padding - (this.gridSize - 1) * gap) / this.gridSize;
         // 方块相对于容器左上角的像素位置（包含内边距和间隙偏移）
         return {
-            left: padding + (cellSize + gap) * y + gap / 2,
-            top:  padding + (cellSize + gap) * x + gap / 2
+            left: padding + y * (cellSize + gap),
+            top:  padding + x * (cellSize + gap)
         };
     }
 
@@ -442,37 +442,42 @@ class Game2048 {
         let touchStartX, touchStartY;
         const gameContainer = document.querySelector('.game-container');
 
-        gameContainer.addEventListener('touchstart', event => {
+        // 阻止整个游戏容器的默认触摸行为，防止滚动干扰
+        gameContainer.addEventListener('touchmove', event => {
+            event.preventDefault();
+        }, { passive: false });
+
+        // 触摸开始时记录起始位置
+        document.addEventListener('touchstart', event => {
             if (!event.touches.length) return;
             touchStartX = event.touches[0].clientX;
             touchStartY = event.touches[0].clientY;
         }, { passive: true });
 
-        gameContainer.addEventListener('touchend', event => {
+        // 触摸结束时计算方向并移动
+        document.addEventListener('touchend', event => {
             if (touchStartX === undefined || touchStartY === undefined) return;
             const touchEndX = event.changedTouches[0].clientX;
             const touchEndY = event.changedTouches[0].clientY;
             const dx = touchEndX - touchStartX;
             const dy = touchEndY - touchStartY;
+            
+            // 设置最小滑动距离阈值，避免误触
+            const minSwipeDistance = 10;
+            
             // 根据滑动水平或垂直距离判断移动方向
-            if (Math.abs(dx) > Math.abs(dy)) {
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > minSwipeDistance) {
                 // 水平滑动
                 this.move(dx > 0 ? 'right' : 'left');
-            } else {
+            } else if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > minSwipeDistance) {
                 // 垂直滑动
                 this.move(dy > 0 ? 'down' : 'up');
             }
+            
             // 重置起始坐标
             touchStartX = undefined;
             touchStartY = undefined;
         }, { passive: true });
-
-        // 阻止触摸移动过程中的页面滚动默认行为
-        gameContainer.addEventListener('touchmove', event => {
-            if (event.touches.length) {
-                event.preventDefault();
-            }
-        }, { passive: false });
     }
 }
 
